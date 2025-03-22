@@ -87,6 +87,26 @@ def mol_to_graph(mol):
   edge_index = adj.nonzero(as_tuple=False).t().contiguous()
 
   # Edge features (E)
+  bond_type_to_idx = {
+    Chem.rdchem.BondType.SINGLE: 0,
+    Chem.rdchem.BondType.DOUBLE: 1,
+    Chem.rdchem.BondType.TRIPLE: 2,
+    Chem.rdchem.BondType.AROMATIC: 3,
+  }
+
+  edge_attr = []
+  for bond in mol.GetBonds():
+    i = bond.GetBeginAtomIdx()
+    j = bond.GetEndAtomIdx()
+    bond_type = bond.GetBondType()
+    bond_feature = [0] * len(bond_type_to_idx)
+    bond_feature[bond_type_to_idx[bond_type]] = 1
+
+    # Add edge in both directions (since PyG treats edges as undirected by default)
+    edge_attr.append(bond_feature)
+    edge_attr.append(bond_feature)
+
+  edge_attr = torch.tensor(edge_attr, dtype=torch.float)
 
   # Global features (U), these were the 6 most
   # important features obtained from XGBoost.
