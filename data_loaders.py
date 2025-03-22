@@ -69,6 +69,17 @@ def mol_to_graph(mol):
   '''
     
   # Node features (X)
+  atom_features = []
+  for atom in mol.GetAtoms():
+    atom_features.append([
+        atom.GetAtomicNum(),
+        atom.GetIsAromatic(),
+        atom.GetDegree(),
+        atom.GetFormalCharge(),
+        atom.GetTotalNumHs(),
+        atom.IsInRing()
+      ])
+  x = torch.tensor(atom_features, dtype=torch.float)
 
   # Adjacency Matrix (A)
   adj = rdmolops.GetAdjacencyMatrix(mol)
