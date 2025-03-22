@@ -9,6 +9,9 @@ from rdkit.Chem import Descriptors, Crippen, rdMolDescriptors
 from rdkit.Chem.GraphDescriptors import BertzCT, BalabanJ
 import torch
 from torch_geometric.data import Data
+from rdkit.Chem.Scaffolds import MurckoScaffold
+from collections import defaultdict
+import numpy as np
 
 # Yeo-Johnson Trasnformation
 from sklearn.preprocessing import PowerTransformer
@@ -134,3 +137,50 @@ def mol_to_graph(mol):
   assert u.shape[1] == 6, "Global feature vector should have 6 features"
 
   return data
+
+def get_scaffolds(mol):
+  try:
+      scaffold = MurckoScaffold.GetScaffoldForMol(mol)
+      if scaffold.GetNumAtoms() == 0:
+          return Chem.MolToSmiles(mol)
+      else:
+          return Chem.MolToSmiles(scaffold)
+  except: return Chem.MolToSmiles(mol)
+
+def generate_scaffold_split(df, frac_train=0.8, frac_valid=0.1, frac_test=0.1, seed=42):
+  # group scaffolds
+  scaffold_to_indices = defaultdict(list)
+  for idx, scaffold in enumerate(df['scaffold']):
+    scaffold_to_indices[scaffold].append(idx)
+
+    # sort scaffolds by group size
+    sorted_scaffold_groups = sorted(scaffold_to_indices.values(), key=len, reverse=True)
+
+    # split into train/val/test by scaffold group
+    train_idx, val_idx, test_idx = [], [], []
+    total = len(df)
+    np.random.seed(seed)
+
+  for group in sorted_scaffold_groups:
+    if len(train_idx) + len(group) <= frac_train * total:
+      train_idx.extend(group)
+    elif len(val_idx) + len(group) <= frac_valid * total:
+      val_idx.extend(group)
+    else:
+      test_idx.extend(group)
+
+  return train_idx, val_idx, test_idx
+  
+def df_to_graph_list(df):
+  graph_list = []
+  for mol, target in zip(df['mol'], df['Solubility']):
+    data = mol_to_graph(mol)
+    data.y = torch.tensor([target], dtype=torch.float).unsqueeze(0)
+    graph_list.append(data)
+  return graph_list
+
+'''
+train_df = df.iloc[train_idx]
+val_df = df.iloc[val_idx]
+test_df = df.iloc[test_idx]
+'''
