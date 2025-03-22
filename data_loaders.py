@@ -71,6 +71,9 @@ def mol_to_graph(mol):
     # Node features (X)
 
     # Adjacency Matrix (A)
+    adj = rdmolops.GetAdjacencyMatrix(mol)
+    adj = torch.tensor(adj, dtype=torch.long)
+    edge_index = adj.nonzero(as_tuple=False).t().contiguous()
 
     # Edge features (E)
 
