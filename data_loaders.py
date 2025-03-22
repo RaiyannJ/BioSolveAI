@@ -3,14 +3,12 @@ import numpy as np
 
 # RDkit Library
 import rdkit
-import rdkit.Chem.Descriptors
 from rdkit import Chem
-from rdkit.Chem import AllChem
-from rdkit.Chem import Draw
-from rdkit.Chem.Draw.MolDrawing import MolDrawing
-from rdkit.Chem.Draw import IPythonConsole
-from rdkit.Chem import Descriptors
-from rdkit.Chem import rdFingerprintGenerator
+from rdkit.Chem import rdmolops
+from rdkit.Chem import Descriptors, Crippen, rdMolDescriptors
+from rdkit.Chem.GraphDescriptors import BertzCT, BalabanJ
+import torch
+from torch_geometric.data import Data
 
 # Yeo-Johnson Trasnformation
 from sklearn.preprocessing import PowerTransformer
@@ -69,3 +67,35 @@ def preproccess_data(file_path):
 
   return df
 
+def mol_to_graph(mol):
+    '''
+    mol: mol object from dataset
+
+    Convert each mol object into GraphTensorw (lecture 13).
+    So we extract Node features (X) which are atomic features,
+    Adjacency matrix (A) for connectivity, 
+    Edge features (E) which represent bond features and
+    Global tensors (U) which are molecular properties.
+    '''
+    # Node features (X)
+
+    # Adjacency Matrix (A)
+
+    # Edge features (E)
+
+    # Global features (U), these were the 6 most
+    # important features obtained from XGBoost.
+    mol_wt = Descriptors.MolWt(mol)
+    mol_logP = Crippen.MolLogP(mol)
+    tpsa = rdMolDescriptors.CalcTPSA(mol)
+    balabanJ = float(BalabanJ(mol))
+    mol_mr = Crippen.MolMR(mol)
+    bertzCT = BertzCT(mol)
+    global_features = [mol_wt, mol_logP, tpsa, balabanJ, mol_mr, bertzCT]
+    u = torch.tensor(global_features, dtype=torch.float)
+
+    # create Pytorch geometric Data Object
+    data = Data()
+    data.u = u
+
+    return data
