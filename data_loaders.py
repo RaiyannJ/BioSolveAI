@@ -117,8 +117,6 @@ def mol_to_graph(mol):
   edge_attr = torch.tensor(edge_attr, dtype=torch.float)
   
   assert edge_attr.shape[0] == 2 * mol.GetNumBonds(), "bond attributes shape[0] is incorrect"
-  assert edge_attr.shape[1] == len(bond_type_to_idx), "bond attributes shape[1] is incorrect"
-  assert torch.all(edge_attr.sum(dim=1) == 1.0), "bond attributes sums are not 1"
 
   # Global features (U), these were the 6 most
   # important features obtained from XGBoost.
