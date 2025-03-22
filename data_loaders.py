@@ -131,6 +131,6 @@ def mol_to_graph(mol):
 
   # create Pytorch geometric Data Object
   data = Data(x=x, edge_index=edge_index, edge_attr=edge_attr, u = u)
-  assert u.shape[0] == 6, "Global feature vector should have 6 features"
+  assert u.shape[1] == 6, "Global feature vector should have 6 features"
 
   return data
