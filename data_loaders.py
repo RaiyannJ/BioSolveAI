@@ -60,36 +60,36 @@ def preproccess_data(file_path):
   return df
 
 def mol_to_graph(mol):
-    '''
-    Convert each mol object into GraphTensorw (lecture 13).
-    So we extract Node features (X) which are atomic features,
-    Adjacency matrix (A) for connectivity, 
-    Edge features (E) which represent bond features and
-    Global tensors (U) which are molecular properties.
-    '''
+  '''
+  Convert each mol object into GraphTensors (lecture 13).
+  So we extract Node features (X) which are atomic features,
+  Adjacency matrix (A) for connectivity, 
+  Edge features (E) which represent bond features and
+  Global tensors (U) which are molecular properties.
+  '''
     
-    # Node features (X)
+  # Node features (X)
 
-    # Adjacency Matrix (A)
-    adj = rdmolops.GetAdjacencyMatrix(mol)
-    adj = torch.tensor(adj, dtype=torch.long)
-    edge_index = adj.nonzero(as_tuple=False).t().contiguous()
+  # Adjacency Matrix (A)
+  adj = rdmolops.GetAdjacencyMatrix(mol)
+  adj = torch.tensor(adj, dtype=torch.long)
+  edge_index = adj.nonzero(as_tuple=False).t().contiguous()
 
-    # Edge features (E)
+  # Edge features (E)
 
-    # Global features (U), these were the 6 most
-    # important features obtained from XGBoost.
-    mol_wt = Descriptors.MolWt(mol)
-    mol_logP = Crippen.MolLogP(mol)
-    tpsa = rdMolDescriptors.CalcTPSA(mol)
-    balabanJ = float(BalabanJ(mol))
-    mol_mr = Crippen.MolMR(mol)
-    bertzCT = BertzCT(mol)
-    global_features = [mol_wt, mol_logP, tpsa, balabanJ, mol_mr, bertzCT]
-    u = torch.tensor(global_features, dtype=torch.float)
+  # Global features (U), these were the 6 most
+  # important features obtained from XGBoost.
+  mol_wt = Descriptors.MolWt(mol)
+  mol_logP = Crippen.MolLogP(mol)
+  tpsa = rdMolDescriptors.CalcTPSA(mol)
+  balabanJ = float(BalabanJ(mol))
+  mol_mr = Crippen.MolMR(mol)
+  bertzCT = BertzCT(mol)
+  global_features = [mol_wt, mol_logP, tpsa, balabanJ, mol_mr, bertzCT]
+  u = torch.tensor(global_features, dtype=torch.float)
 
-    # create Pytorch geometric Data Object
-    data = Data()
-    data.u = u
+  # create Pytorch geometric Data Object
+  data = Data()
+  data.u = u
 
-    return data
+  return data
