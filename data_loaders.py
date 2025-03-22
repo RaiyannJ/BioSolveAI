@@ -127,7 +127,7 @@ def mol_to_graph(mol):
   mol_mr = Crippen.MolMR(mol)
   bertzCT = BertzCT(mol)
   global_features = [mol_wt, mol_logP, tpsa, balabanJ, mol_mr, bertzCT]
-  u = torch.tensor(global_features, dtype=torch.float)
+  u = torch.tensor(global_features, dtype=torch.float).unsqueeze(0)
 
   # create Pytorch geometric Data Object
   data = Data(x=x, edge_index=edge_index, edge_attr=edge_attr, u = u)
