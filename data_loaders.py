@@ -15,8 +15,6 @@ from sklearn.preprocessing import PowerTransformer
 
 def standardize_smiles(smiles):
   '''
-  smiles: smiles column from dataset
-
   This function standardizes all smiles in the dataset
   to ensure consistency in the data.
   '''
@@ -32,15 +30,9 @@ def standardize_smiles(smiles):
 
 def preproccess_data(file_path):
   '''
-  file_path: file path to the dataset
-
   This function loads the data as a pandas df, extracts the
   mol object from the smiles and then removes outliers and 
   transforms data to be more normalized.
-
-  This stems from EDA done in the EDA.ipynb file!
-
-  Output is the preprocessed df, df
   '''
 
   # load data set
@@ -69,14 +61,13 @@ def preproccess_data(file_path):
 
 def mol_to_graph(mol):
     '''
-    mol: mol object from dataset
-
     Convert each mol object into GraphTensorw (lecture 13).
     So we extract Node features (X) which are atomic features,
     Adjacency matrix (A) for connectivity, 
     Edge features (E) which represent bond features and
     Global tensors (U) which are molecular properties.
     '''
+    
     # Node features (X)
 
     # Adjacency Matrix (A)
