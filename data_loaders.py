@@ -57,6 +57,8 @@ def preproccess_data(file_path):
   normalizer = PowerTransformer(method='yeo-johnson')
   df['Solubility'] = normalizer.fit_transform(df[['Solubility']])
 
+  assert df.shape == (9959, 27), "df shape is incorrect"
+  
   return df
 
 def mol_to_graph(mol):
@@ -80,11 +82,17 @@ def mol_to_graph(mol):
         atom.IsInRing()
       ])
   x = torch.tensor(atom_features, dtype=torch.float)
+  assert x.shape[0] == mol.GetNumAtoms(), "node features shape[0] incorrect"
+  assert x.shape[1] == 6, "node features shape[1] is incorrect"
 
   # Adjacency Matrix (A)
   adj = rdmolops.GetAdjacencyMatrix(mol)
   adj = torch.tensor(adj, dtype=torch.long)
   edge_index = adj.nonzero(as_tuple=False).t().contiguous()
+  
+  assert edge_index.shape[1] == adj.sum() == 2 * mol.GetNumBonds(), "edge_index.shape[1] is incorrect"
+  assert edge_index.shape[0] == 2, "edge_index.shape[0] is incorrect"
+  assert adj.shape[0] == adj.shape[1] == mol.GetNumAtoms(), "adj matrix shape is incorrect"
 
   # Edge features (E)
   bond_type_to_idx = {
@@ -107,6 +115,10 @@ def mol_to_graph(mol):
     edge_attr.append(bond_feature)
 
   edge_attr = torch.tensor(edge_attr, dtype=torch.float)
+  
+  assert edge_attr.shape[0] == 2 * mol.GetNumBonds(), "bond attributes shape[0] is incorrect"
+  assert edge_attr.shape[1] == len(bond_type_to_idx), "bond attributes shape[1] is incorrect"
+  assert torch.all(edge_attr.sum(dim=1) == 1.0), "bond attributes sums are not 1"
 
   # Global features (U), these were the 6 most
   # important features obtained from XGBoost.
@@ -120,7 +132,8 @@ def mol_to_graph(mol):
   u = torch.tensor(global_features, dtype=torch.float)
 
   # create Pytorch geometric Data Object
-  data = Data()
+  data = Data(x=x, edge_index=edge_index, edge_attr=edge_attr)
   data.u = u
+  assert u.shape[0] == 6, "Global feature vector should have 6 features"
 
   return data
