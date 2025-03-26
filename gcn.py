@@ -25,3 +25,8 @@ class GCN(nn.Module):
 def forward(self, data):
         x, edge_index, batch = data.x, data.edge_index, data.batch
         
+        # 1st layer 3 parallel GCNs
+        x1a = F.relu(self.conv1a(x, edge_index))
+        x1b = F.relu(self.conv1b(x, edge_index))
+        x1c = F.relu(self.conv1c(x, edge_index))
+        
