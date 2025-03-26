@@ -28,5 +28,9 @@ def forward(self, data):
         # 1st layer 3 parallel GCNs
         x1a = F.relu(self.conv1a(x, edge_index))
         x1b = F.relu(self.conv1b(x, edge_index))
-        x1c = F.relu(self.conv1c(x, edge_index))
+        x1c = F.relu(self.conv1c(x, edge_index)) 
+        # combine
+        x1 = torch.cat([x1a, x1b, x1c], dim=1)
+        x1 = F.relu(self.lin1(x1))
+        
         
