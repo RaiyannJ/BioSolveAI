@@ -40,4 +40,10 @@ def forward(self, data):
         x2 = torch.cat([x2a, x2b, x2c], dim=1)
         x2 = F.relu(self.lin2(x2))
         
+        # Global mean pooling aggregates node features into a graph-level representation
+        x_pool = global_mean_pool(x2, batch)
+        
+        # Final prediction layer
+        out = self.fc(x_pool)
+        return out
         
