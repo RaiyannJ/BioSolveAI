@@ -21,3 +21,7 @@ class GCN(nn.Module):
         
         # Final fully connected layer to produce 1 output (solubility prediction)
         self.fc = nn.Linear(hidden_dim, output_dim)
+        
+def forward(self, data):
+        x, edge_index, batch = data.x, data.edge_index, data.batch
+        
