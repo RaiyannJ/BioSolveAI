@@ -1,16 +1,24 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_geometric.nn import GCNConv, global_mean_pool
+from torch_geometric.nn import GINEConv, global_mean_pool
+from torch.nn import Sequential, Linear, ReLU
+class GCN1(nn.Module):
+    def __init__(self, num_node_features, edge_attr_dim, u_dim, hidden_dim=64, output_dim=1):
+        super(GCN1, self).__init__()
 
-class GCN(nn.Module):
-    def __init__(self, num_node_features, hidden_dim=64, output_dim=1):
-        super(GCN, self).__init__()
-        # 1st layer 3 parallel GCNconv layer
-        self.conv1a = GCNConv(num_node_features, hidden_dim)
-        self.conv1b = GCNConv(num_node_features, hidden_dim)
-        self.conv1c = GCNConv(num_node_features, hidden_dim)
-        # Combine 3 outputs with a linear transformation
+        # MLPs to preprocess edge attributes before passing to GINEConv
+        self.edge_mlp1 = Sequential(Linear(edge_attr_dim, hidden_dim), ReLU(), Linear(hidden_dim, hidden_dim))
+        self.edge_mlp2 = Sequential(Linear(edge_attr_dim, hidden_dim), ReLU(), Linear(hidden_dim, hidden_dim))
+
+        # 1st layer: 3 parallel GINEConv layers
+        self.conv1a = GINEConv(nn=Sequential(Linear(num_node_features, hidden_dim), ReLU(), Linear(hidden_dim, hidden_dim)),
+                               edge_dim=hidden_dim)
+        self.conv1b = GINEConv(nn=Sequential(Linear(num_node_features, hidden_dim), ReLU(), Linear(hidden_dim, hidden_dim)),
+                               edge_dim=hidden_dim)
+        self.conv1c = GINEConv(nn=Sequential(Linear(num_node_features, hidden_dim), ReLU(), Linear(hidden_dim, hidden_dim)),
+                               edge_dim=hidden_dim)
+
         self.lin1 = nn.Linear(hidden_dim * 3, hidden_dim)
         
         # 2nd layer 3 parallel GCNConv layers on transformed features
