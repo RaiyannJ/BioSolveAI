@@ -47,10 +47,13 @@ def forward(self, data):
         x1 = torch.cat([x1a, x1b, x1c], dim=1)
         x1 = F.relu(self.lin1(x1))
         
-        # 2nd layer 3 parallel GCNs and combine
-        x2a = F.relu(self.conv2a(x1, edge_index))
-        x2b = F.relu(self.conv2b(x1, edge_index))
-        x2c = F.relu(self.conv2c(x1, edge_index))
+        # Preprocess edge attributes again for second GINE layer
+        edge_attr2 = self.edge_mlp2(edge_attr)
+
+        # 2nd GINE layer (3 parallel paths)
+        x2a = F.relu(self.conv2a(x1, edge_index, edge_attr2))
+        x2b = F.relu(self.conv2b(x1, edge_index, edge_attr2))
+        x2c = F.relu(self.conv2c(x1, edge_index, edge_attr2))
         x2 = torch.cat([x2a, x2b, x2c], dim=1)
         x2 = F.relu(self.lin2(x2))
         
