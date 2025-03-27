@@ -60,7 +60,10 @@ def forward(self, data):
         # Global mean pooling aggregates node features into a graph-level representation
         x_pool = global_mean_pool(x2, batch)
         
+        # Combine with graph-level feature u
+        x_final = torch.cat([x_pool, u], dim=1)
+
         # Final prediction layer
-        out = self.fc(x_pool)
+        out = self.fc(x_final)
         return out
         
