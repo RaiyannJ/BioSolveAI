@@ -41,7 +41,7 @@ class GCN(nn.Module):
         # Preprocess edge attributes for first GINE layer
         edge_attr1 = self.edge_mlp1(edge_attr)
         
-       # 1st GINE layer (3 parallel paths)
+        # 1st GINE layer (3 parallel paths)
         x1a = F.relu(self.conv1a(x, edge_index, edge_attr1))
         x1b = F.relu(self.conv1b(x, edge_index, edge_attr1))
         x1c = F.relu(self.conv1c(x, edge_index, edge_attr1))
