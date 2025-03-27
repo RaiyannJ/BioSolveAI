@@ -3,9 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.nn import GINEConv, global_mean_pool
 from torch.nn import Sequential, Linear, ReLU
-class GCN1(nn.Module):
+
+class GCN(nn.Module):
     def __init__(self, num_node_features, edge_attr_dim, u_dim, hidden_dim=64, output_dim=1):
-        super(GCN1, self).__init__()
+        super(GCN, self).__init__()
 
         # MLPs to preprocess edge attributes before passing to GINEConv
         self.edge_mlp1 = Sequential(Linear(edge_attr_dim, hidden_dim), ReLU(), Linear(hidden_dim, hidden_dim))
