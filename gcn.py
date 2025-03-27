@@ -22,13 +22,17 @@ class GCN1(nn.Module):
         self.lin1 = nn.Linear(hidden_dim * 3, hidden_dim)
         
         # 2nd layer 3 parallel GCNConv layers on transformed features
-        self.conv2a = GCNConv(hidden_dim, hidden_dim)
-        self.conv2b = GCNConv(hidden_dim, hidden_dim)
-        self.conv2c = GCNConv(hidden_dim, hidden_dim)
+        self.conv2a = GINEConv(nn=Sequential(Linear(hidden_dim, hidden_dim), ReLU(), Linear(hidden_dim, hidden_dim)),
+                               edge_dim=hidden_dim)
+        self.conv2b = GINEConv(nn=Sequential(Linear(hidden_dim, hidden_dim), ReLU(), Linear(hidden_dim, hidden_dim)),
+                               edge_dim=hidden_dim)
+        self.conv2c = GINEConv(nn=Sequential(Linear(hidden_dim, hidden_dim), ReLU(), Linear(hidden_dim, hidden_dim)),
+                               edge_dim=hidden_dim)
+
         self.lin2 = nn.Linear(hidden_dim * 3, hidden_dim)
         
         # Final fully connected layer to produce 1 output (solubility prediction)
-        self.fc = nn.Linear(hidden_dim, output_dim)
+        self.fc = Linear(hidden_dim + u_dim, output_dim) #add the global feature 
         
 def forward(self, data):
         x, edge_index, batch = data.x, data.edge_index, data.batch
