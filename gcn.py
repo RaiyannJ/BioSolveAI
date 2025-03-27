@@ -35,13 +35,15 @@ class GCN1(nn.Module):
         self.fc = Linear(hidden_dim + u_dim, output_dim) #add the global feature 
         
 def forward(self, data):
-        x, edge_index, batch = data.x, data.edge_index, data.batch
+        x, edge_index, edge_attr, u, batch = data.x, data.edge_index, data.edge_attr, data.u, data.batch
+
+        # Preprocess edge attributes for first GINE layer
+        edge_attr1 = self.edge_mlp1(edge_attr)
         
-        # 1st layer 3 parallel GCNs
-        x1a = F.relu(self.conv1a(x, edge_index))
-        x1b = F.relu(self.conv1b(x, edge_index))
-        x1c = F.relu(self.conv1c(x, edge_index)) 
-        # combine
+       # 1st GINE layer (3 parallel paths)
+        x1a = F.relu(self.conv1a(x, edge_index, edge_attr1))
+        x1b = F.relu(self.conv1b(x, edge_index, edge_attr1))
+        x1c = F.relu(self.conv1c(x, edge_index, edge_attr1))
         x1 = torch.cat([x1a, x1b, x1c], dim=1)
         x1 = F.relu(self.lin1(x1))
         
