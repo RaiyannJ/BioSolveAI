@@ -43,7 +43,7 @@ class GCN(nn.Module):
         # dropout
         self.dropout1 = nn.Dropout(0.35)
         self.dropout2 = nn.Dropout(0.35)
-        self.dropout3 = nn.Dropout(0.3)
+        self.dropout3 = nn.Dropout(0.35)
           
     def forward(self, data):
         x, edge_index, edge_attr, u, batch = data.x, data.edge_index, data.edge_attr, data.u, data.batch
