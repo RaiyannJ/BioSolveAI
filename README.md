@@ -10,3 +10,6 @@ Welcome to our Github Repo! Our BioSolveAI model works on predicting solubility 
     gcn_change1-6.py #different gcn models with various hyperparameters for tuning 
     gcn.py #Python code for the GNN architecture and forward loop
     optimzation.ipynb #Bayesian optimization code 
+
+(3) Data (folder):
+    curated-solubility-dataset.csv #raw data from AqSolDB data base
