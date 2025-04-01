@@ -29,7 +29,7 @@ def train(model, train_loader, val_loader, num_epochs, learning_rate, weight_dec
     # Define loss criterion, optimizer, and learning rate scheduler
     criterion = nn.MSELoss()
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
-    scheduler = CosineAnnealingLR(optimizer, T_max=50, eta_min=1e-6)
+    scheduler = CosineAnnealingLR(optimizer, T_max=60, eta_min=1e-6)
 
     train_losses = []
     val_losses = []
