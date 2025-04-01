@@ -9,6 +9,13 @@ import IPython.display as ipd
 import numpy as np
 from rdkit import Chem
 
+#pytorch tensor to numpy array
+def cast_tensor(t):
+    return t.detach().cpu().numpy() if isinstance(t, torch.Tensor) else np.array(t) # if alr np array just return
+
+def display_header(text):
+    print("\n====", text, "====\n")
+
 def load_trained_model(model_path, model_args=None, device="cpu"):
     if model_args is None:
         raise ValueError("You must provide model_args to load the model architecture.")
