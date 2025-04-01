@@ -10,7 +10,8 @@ from rdkit import Chem
 from rdkit.Chem.Draw import rdMolDraw2D
 import IPython.display as ipd
 import numpy as np
-from rdkit import Chem
+import matplotlib.pyplot as plt
+from collections import defaultdict, Counter
 
 #pytorch tensor to numpy array
 def cast_tensor(t):
@@ -85,3 +86,58 @@ def get_node_attribution_gnn(model, data_loader, sample_index=0, device="cpu"):
     node_attribution_scores = gradients.abs().sum(dim=1).detach().cpu()
 
     return node_attribution_scores, sample_data, prediction, sample_data.y.item()
+
+
+def summarize_attributions(model, data_loader, num_samples=10, device="cpu"):
+    summary = []
+
+    for idx in range(min(num_samples, len(data_loader))):
+        scores, data, pred, target = get_node_attribution_gnn(model, data_loader, idx, device)
+        atom_idx = scores.argmax().item()
+        mol = Chem.MolFromSmiles(data.smiles)
+        atom_symbol = mol.GetAtomWithIdx(atom_idx).GetSymbol() if mol else "?"
+        summary.append((pred, target, atom_symbol, scores.numpy()))
+
+    return summary
+
+
+def plot_top_atoms_histogram(summary):
+    atoms = [entry[2] for entry in summary]
+    counts = Counter(atoms)
+    plt.figure(figsize=(6,4))
+    plt.bar(counts.keys(), counts.values(), color='teal')
+    plt.title("Top Attributed Atom Symbols")
+    plt.xlabel("Atom")
+    plt.ylabel("Count")
+    plt.grid(True)
+    plt.show()
+
+
+def plot_prediction_vs_target(summary):
+    preds = [entry[0] for entry in summary]
+    targets = [entry[1] for entry in summary]
+    plt.figure(figsize=(5,5))
+    plt.scatter(targets, preds, c='darkorange')
+    plt.plot([min(targets), max(targets)], [min(targets), max(targets)], 'k--')
+    plt.xlabel("True Solubility")
+    plt.ylabel("Predicted Solubility")
+    plt.title("Predicted vs. Actual")
+    plt.grid(True)
+    plt.show()
+
+
+def plot_mean_attribution_by_element(summary):
+    element_scores = defaultdict(list)
+    for (_, _, atom_symbol, scores) in summary:
+        element_scores[atom_symbol].append(np.max(scores))
+
+    elements = list(element_scores.keys())
+    means = [np.mean(element_scores[el]) for el in elements]
+
+    plt.figure(figsize=(6,4))
+    plt.bar(elements, means, color='slateblue')
+    plt.title("Mean Attribution by Atom Type")
+    plt.xlabel("Atom Symbol")
+    plt.ylabel("Mean Max Attribution")
+    plt.grid(True)
+    plt.show()
