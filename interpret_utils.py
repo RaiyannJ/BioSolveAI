@@ -16,6 +16,42 @@ def cast_tensor(t):
 def display_header(text):
     print("\n====", text, "====\n")
 
+
+def visualize_attribution(smiles, attribution_scores, molecule_name="Molecule", cmap_name='viridis'):
+    """
+    Visualizes node attribution scores on a 2D molecule depiction using RDKit.
+
+    Args:
+        smiles (str): SMILES string of the molecule.
+        attribution_scores (torch.Tensor or np.ndarray): Node attribution scores.
+        molecule_name (str): Name of the molecule for the title.
+        cmap_name (str): Matplotlib colormap name (e.g. 'viridis').
+    """
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is None:
+        raise ValueError(f"Invalid SMILES string: {smiles}")
+
+    attribution_scores_np = cast_tensor(attribution_scores)
+    num_atoms = mol.GetNumAtoms()
+    if len(attribution_scores_np) != num_atoms:
+        raise ValueError(f"Number of attribution scores ({len(attribution_scores_np)}) must match number of atoms ({num_atoms})")
+
+    # Normalize to [0, 1]
+    min_score = np.min(attribution_scores_np)
+    max_score = np.max(attribution_scores_np)
+    normalized = (attribution_scores_np - min_score) / (max_score - min_score) if max_score > min_score else np.zeros_like(attribution_scores_np)
+
+    cmap = cmaps.get_cmap(cmap_name)
+    atom_colors = {i: tuple(cmap(score)[:3]) for i, score in enumerate(normalized)}
+
+    drawer = rdMolDraw2D.MolDraw2DSVG(400, 300)
+    rdMolDraw2D.PrepareAndDrawMolecule(drawer, mol, highlightAtoms=range(num_atoms), highlightAtomColors=atom_colors)
+    drawer.FinishDrawing()
+
+    display_header(f"Node Attribution Heatmap - {molecule_name}")
+    ipd.display(ipd.SVG(drawer.GetDrawingText()))
+    
+
 def load_trained_model(model_path, model_args=None, device="cpu"):
     if model_args is None:
         raise ValueError("You must provide model_args to load the model architecture.")
