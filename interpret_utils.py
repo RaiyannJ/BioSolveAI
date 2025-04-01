@@ -4,7 +4,10 @@ from gcn import GCN
 from torch_geometric.data import Data
 
 import matplotlib.cm as cmaps
-from rdkit.Chem import rdMolDraw2D
+# from rdkit.Chem import rdMolDraw2D -> broken, spent many hours cause of this
+from rdkit import rdBase
+from rdkit import Chem
+from rdkit.Chem.Draw import rdMolDraw2D
 import IPython.display as ipd
 import numpy as np
 from rdkit import Chem
