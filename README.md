@@ -35,4 +35,4 @@ Welcome to our Github Repo! Our BioSolveAI model works on predicting solubility 
 
     config.toml #final hyperparameter values used after Baysian optimization
 
-    
+    best_model.pth #final weights/ parameters of GNN model 
