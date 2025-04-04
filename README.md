@@ -22,3 +22,5 @@ Welcome to our Github Repo! Our BioSolveAI model works on predicting solubility 
     curated-solubility-dataset.csv #raw data from AqSolDB data base
 
     data_loaders.py #code to extract global features from raw data and get scaffolds and convert to graphs
+
+    testing_data_set.ipynb #this is testing file used to get tensor representations and scaffolds 
