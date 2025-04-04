@@ -1,5 +1,7 @@
 # BioSolveAI
-Welcome to our Github Repo! Our BioSolveAI model works on predicting solubility of molecules. We have divided our files as follows:
+Team members: Raiyann Jacob, Shahd Abu Gharbieh, Tanish Sharma
+
+Welcome to our Github Repo! This project has been completed for ECE324: Neural Networks course for UofT Engineering Science. Our BioSolveAI model works on predicting solubility of molecules. We have divided our files as follows:
 
 (1) Baseline and EDA (folder):
 
