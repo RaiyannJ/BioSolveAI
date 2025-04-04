@@ -30,3 +30,9 @@ Welcome to our Github Repo! Our BioSolveAI model works on predicting solubility 
     interpret_utils.py #python code to get node attributions and histograms 
 
     run_interpret.ipynb #python file for getting attributions and summarizing information across data set 
+
+(5) Additional files (not in folder):
+
+    config.toml #final hyperparameter values used after Baysian optimization
+
+    
