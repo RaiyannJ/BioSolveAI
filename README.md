@@ -24,3 +24,9 @@ Welcome to our Github Repo! Our BioSolveAI model works on predicting solubility 
     data_loaders.py #code to extract global features from raw data and get scaffolds and convert to graphs
 
     testing_data_set.ipynb #this is testing file used to get tensor representations and scaffolds 
+
+(4) Interpretability (folder):
+
+    interpret_utils.py #python code to get node attributions and histograms 
+
+    run_interpret.ipynb #python file for getting attributions and summarizing information across data set 
